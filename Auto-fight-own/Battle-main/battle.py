@@ -1,6 +1,7 @@
 import pygame
 import random
 import button
+import time
 
 pygame.init()
 
@@ -84,8 +85,9 @@ def draw_panel():
 	#show name and health
 	draw_text(f'{bandit1.name} HP: {bandit1.hp}', font, red, 550, (screen_height - bottom_panel + 10) + 60)
 
-
-
+def draw_good_answer():
+	draw_text(f'Jó válasz', font, green, 100, 100)
+	# time.sleep(5)
 
 #fighter class
 class Fighter():
@@ -283,8 +285,6 @@ while run:
 	#draw background
 	draw_bg()
 
-
-
 	#draw panel
 	draw_panel()
 	knight_health_bar.draw(knight.hp)
@@ -321,6 +321,9 @@ while run:
 	#reset action variables
 	attack = False
 	wrong_answer_attack = False
+	#draw_good_answer = False
+	#draw_wrong_answer = False
+	#current_time = 0
 	potion = False
 	target = None
 	#make sure mouse is visible
@@ -334,7 +337,7 @@ while run:
 		if clicked == True and result1 == True and bandit1.alive == True:
 			attack = True
 			target = bandit1
-			draw_text(f'Jó válasz', font, green, 100, 100)
+			draw_good_answer()
 		if clicked == True and result1 == False and bandit1.alive == True:
 			draw_text(f'Rossz válasz', font, red, 100, 100)
 			wrong_answer_attack = True
@@ -345,7 +348,7 @@ while run:
 		if clicked == True and result2 == True and bandit1.alive == True:
 			attack = True
 			target = bandit1
-			draw_text(f'Jó válasz', font, green, 100, 100)
+			draw_good_answer()
 		if clicked == True and result2 == False and bandit1.alive == True:
 			draw_text(f'Rossz válasz', font, red, 100, 100)
 			wrong_answer_attack = True
@@ -355,6 +358,12 @@ while run:
 	#show number of potions remaining
 	draw_text(str(knight.potions), font, red, 150, screen_height - bottom_panel + 70)
 
+	# if draw_good_answer == True:
+	# 	current_time = pygame.time.get_ticks()
+	# 	draw_text(f'Jó válasz', font, green, 100, 100)
+	# 	# if current_time > 15000:
+	# 	# 	draw_good_answer = False
+	# 	# 	#break
 
 	if game_over == 0:
 		#player action
@@ -371,6 +380,7 @@ while run:
 					if wrong_answer_attack == True:
 						current_fighter += 1
 						action_cooldown = 0
+
 					#potion
 					if potion == True:
 						if knight.potions > 0:
