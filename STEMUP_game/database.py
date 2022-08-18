@@ -6,3 +6,8 @@ mycursor.execute("select * from accounts")
 
 for i in mycursor:
     print(i)
+
+# myresult = mycursor.fetchall()
+#
+# for i in myresult:
+#     print(i)

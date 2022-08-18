@@ -9,7 +9,8 @@ clock = pygame.time.Clock()
 fps = 60
 
 #game window
-bottom_panel = 150
+bottom_panel = 160
+question_panel = 50
 screen_width = 800
 screen_height = 400 + bottom_panel
 
@@ -27,7 +28,7 @@ answer2 = 'No'
 current_fighter = 1
 total_fighters = 2
 action_cooldown = 0
-action_wait_time = 90
+action_wait_time = 75
 attack = False
 potion = False
 potion_effect = 15
@@ -36,7 +37,7 @@ game_over = 0
 
 
 #define fonts
-font = pygame.font.SysFont('Times New Roman', 26)
+font = pygame.font.Font('font/8-BIT WONDER.ttf', 16)
 
 #define colours
 red = (255, 0, 0)
@@ -48,8 +49,8 @@ black = (0, 0, 0)
 #background image
 background_img = pygame.image.load('img/Background/background.png').convert_alpha()
 #panel image
-panel_img = pygame.image.load('img/Icons/panel.png').convert_alpha()
-questionpanel_img = pygame.image.load('img/Icons/quiz-question-panel-one-piece.png').convert_alpha()
+panel_img = pygame.image.load('img/Icons/new_panel.png').convert_alpha()
+questionpanel_img = pygame.image.load('img/Icons/question_panel.png').convert_alpha()
 #button images
 potion_img = pygame.image.load('img/Icons/potion.png').convert_alpha()
 restart_img = pygame.image.load('img/Icons/restart.png').convert_alpha()
@@ -73,22 +74,21 @@ def draw_text(text, font, text_col, x, y):
 def draw_bg():
 	screen.blit(background_img, (0, 0))
 
-
 #function for drawing panel
 def draw_panel():
 	#draw panel rectangle
 	screen.blit(panel_img, (0, screen_height - bottom_panel))
-	screen.blit(questionpanel_img, (0, screen_height - 200))
-	screen.blit(questionpanel_img, (400, screen_height - 200))
-	#show knight stats
-	draw_text(f'{knight.name} HP: {knight.hp}', font, red, 100, screen_height - bottom_panel + 10)
-	#show name and health
-	draw_text(f'{bandit1.name} HP: {bandit1.hp}', font, red, 550, (screen_height - bottom_panel + 10) + 60)
+	screen.blit(questionpanel_img, (0, screen_height - 210))
+	# #show knight stats
+	# draw_text(f'{knight.name} HP: {knight.hp}', font, red, 100, screen_height - bottom_panel + 10)
+	# #show name and health
+	# draw_text(f'{bandit1.name} HP: {bandit1.hp}', font, red, 550, (screen_height - bottom_panel + 10) + 60)
 
 def draw_good_answer():
-	draw_text(f'Jó válasz', font, green, 100, 100)
-	# time.sleep(5)
+	draw_text(f'Good answer', font, green, (screen_width/2-78), screen_height-bottom_panel-question_panel-20)
 
+def draw_wrong_answer():
+	draw_text(f'Wrong answer', font, red, (screen_width / 2 - 92), screen_height-bottom_panel-question_panel-20)
 #fighter class
 class Fighter():
 	def __init__(self, x, y, name, max_hp, strength, potions):
@@ -220,8 +220,9 @@ class HealthBar():
 		self.hp = hp
 		#calculate health ratio
 		ratio = self.hp / self.max_hp
-		pygame.draw.rect(screen, red, (self.x, self.y, 150, 20))
-		pygame.draw.rect(screen, green, (self.x, self.y, 150 * ratio, 20))
+		pygame.draw.rect(screen, green, (self.x, self.y, 20, 120))
+		pygame.draw.rect(screen, red, (self.x, self.y, 20, 120 - (120 * ratio)))
+		#pygame.draw.rect(screen, green, (self.x, self.y + (120 - (120 * ratio)), 20, 120 * ratio))
 
 
 
@@ -250,32 +251,27 @@ damage_text_group = pygame.sprite.Group()
 knight = Fighter(200, 260, 'Knight', 50, 10, 3)
 bandit1 = Fighter(550, 270, 'Bandit', 20, 6, 1)
 
-knight_health_bar = HealthBar(100, screen_height - bottom_panel + 40, knight.hp, knight.max_hp)
-bandit1_health_bar = HealthBar(550, screen_height - bottom_panel + 40, bandit1.hp, bandit1.max_hp)
+knight_health_bar = HealthBar(26, screen_height - 142, knight.hp, knight.max_hp)
+bandit1_health_bar = HealthBar(754, screen_height - 142, bandit1.hp, bandit1.max_hp)
 
 #create buttons
-potion_button = button.Button(screen, 100, screen_height - bottom_panel + 70, potion_img, 64, 64)
+# potion_button = button.Button(screen, 100, screen_height - bottom_panel + 70, potion_img, 64, 64)
 restart_button = button.Button(screen, 330, 120, restart_img, 120, 30)
 
- # answer_img1 = Answer
-answer_img1 = font.render(answer1, True, white)
-answer_img2 = font.render(answer2, True, white)
-answer1_button = button.Button(screen, screen_width * 0.25, screen_height - 190, answer_img1, 40, 30)
-answer2_button = button.Button(screen, screen_width * 0.75, screen_height - 190, answer_img2, 40, 30)
+# answer_img1 = Answer
+answer_text1 = font.render(answer1, True, white)
+answer_text2 = font.render(answer2, True, white)
+answer1_button = button.Button(screen, screen_width * 0.25, screen_height - 100, answer_text1, 40, 30)
+answer2_button = button.Button(screen, screen_width * 0.7, screen_height - 100, answer_text2, 40, 30)
 
-imgvalue = pygame.image.load(f'img/Icons/quiz-question-panel-one-piece.png')
-imgvalue = pygame.transform.scale(imgvalue, (imgvalue.get_width() * 2, imgvalue.get_height()))
+imgvalue = pygame.image.load(f'img/Icons/question_panel.png')
+imgvalue = pygame.transform.scale(imgvalue, ((imgvalue.get_width()-10), imgvalue.get_height()))
 left_answer_button = imgvalue.get_rect()
 left_answer_button.center = (0, screen_height-177)
 
-imgvalue2 = pygame.transform.scale(imgvalue, (imgvalue.get_width(), imgvalue.get_height()))
+imgvalue2 = pygame.transform.scale(imgvalue, ((imgvalue.get_width()-10), imgvalue.get_height()))
 right_answer_button = imgvalue2.get_rect()
 right_answer_button.center = (800, screen_height-177)
-
-# class Answer():
-# 	def __init__(self, text_img, rect, result):
-# 		self.text_img = text_img
-# 		self.rect
 
 run = True
 while run:
@@ -292,10 +288,7 @@ while run:
 
 
 	# draw question
-	draw_text(question1, font, white, 300, 0)
-	# # draw answers
-	# draw_text(answer1, font, black, screen_width * 0.25, screen_height - 190)
-	# draw_text(answer2, font, black, screen_width * 0.75, screen_height - 190)
+	draw_text(question1, font, white, 185, (screen_height-195))
 	answer1 = False
 	answer2 = False
 	result1 = True
@@ -304,9 +297,7 @@ while run:
 		answer1 = True
 	if answer2_button.draw():
 		answer2 = True
-
-	answer2_button.draw()
-
+	#answer2_button.draw()
 	#draw fighters
 	knight.update()
 	knight.draw()
@@ -329,7 +320,9 @@ while run:
 	#make sure mouse is visible
 	pygame.mouse.set_visible(True)
 	pos = pygame.mouse.get_pos()
-	if left_answer_button.collidepoint(pos):
+	posx, posy = pygame.mouse.get_pos()
+	if posy > (screen_height-bottom_panel) and \
+			posy < (screen_height-10) and posx > 80 and posx < (screen_width/2-10):
 		#hide mouse
 		pygame.mouse.set_visible(False)
 		#show sword in place of mouse cursor
@@ -337,26 +330,29 @@ while run:
 		if clicked == True and result1 == True and bandit1.alive == True:
 			attack = True
 			target = bandit1
-			draw_good_answer()
+			#draw_good_answer()
 		if clicked == True and result1 == False and bandit1.alive == True:
-			draw_text(f'Rossz válasz', font, red, 100, 100)
+			#draw_text(f'Rossz válasz', font, red, 100, 100)
 			wrong_answer_attack = True
 
-	if right_answer_button.collidepoint(pos):
+	if posy > (screen_height-bottom_panel) and \
+			posy < (screen_height-10) and posx > (screen_width/2+10) and posx < (screen_width - 80):
 		pygame.mouse.set_visible(False)
 		screen.blit(sword_img, pos)
 		if clicked == True and result2 == True and bandit1.alive == True:
 			attack = True
 			target = bandit1
-			draw_good_answer()
+			#draw_good_answer()
 		if clicked == True and result2 == False and bandit1.alive == True:
-			draw_text(f'Rossz válasz', font, red, 100, 100)
+			# draw_text(f'Rossz válasz', font, red, 100, 100)
 			wrong_answer_attack = True
 
-	if potion_button.draw():
-		potion = True
-	#show number of potions remaining
-	draw_text(str(knight.potions), font, red, 150, screen_height - bottom_panel + 70)
+
+
+	# if potion_button.draw():
+	# 	potion = True
+	# #show number of potions remaining
+	# draw_text(str(knight.potions), font, red, 150, screen_height - bottom_panel + 70)
 
 	# if draw_good_answer == True:
 	# 	current_time = pygame.time.get_ticks()
@@ -375,28 +371,29 @@ while run:
 					#attack
 					if attack == True and target != None:
 						knight.attack(target)
-						current_fighter += 1
+						#current_fighter += 1
 						action_cooldown = 0
 					if wrong_answer_attack == True:
 						current_fighter += 1
-						action_cooldown = 0
+						action_cooldown = 50
 
-					#potion
-					if potion == True:
-						if knight.potions > 0:
-							#check if the potion would heal the player beyond max health
-							if knight.max_hp - knight.hp > potion_effect:
-								heal_amount = potion_effect
-							else:
-								heal_amount = knight.max_hp - knight.hp
-							knight.hp += heal_amount
-							knight.potions -= 1
-							damage_text = DamageText(knight.rect.centerx, knight.rect.y, str(heal_amount), green)
-							damage_text_group.add(damage_text)
-							current_fighter += 1
-							action_cooldown = 0
+					# #potion
+					# if potion == True:
+					# 	if knight.potions > 0:
+					# 		#check if the potion would heal the player beyond max health
+					# 		if knight.max_hp - knight.hp > potion_effect:
+					# 			heal_amount = potion_effect
+					# 		else:
+					# 			heal_amount = knight.max_hp - knight.hp
+					# 		knight.hp += heal_amount
+					# 		knight.potions -= 1
+					# 		damage_text = DamageText(knight.rect.centerx, knight.rect.y, str(heal_amount), green)
+					# 		damage_text_group.add(damage_text)
+					# 		current_fighter += 1
+					# 		action_cooldown = 0
 		else:
 			game_over = -1
+
 
 
 		#enemy action
@@ -405,23 +402,23 @@ while run:
 				action_cooldown += 1
 				if action_cooldown >= action_wait_time:
 					#check if bandit needs to heal first
-					if (bandit1.hp / bandit1.max_hp) < 0.5 and bandit1.potions > 0:
-						#check if the potion would heal the bandit beyond max health
-						if bandit1.max_hp - bandit1.hp > potion_effect:
-							heal_amount = potion_effect
-						else:
-							heal_amount = bandit1.max_hp - bandit1.hp
-						bandit1.hp += heal_amount
-						bandit1.potions -= 1
-						damage_text = DamageText(bandit1.rect.centerx, bandit1.rect.y, str(heal_amount), green)
-						damage_text_group.add(damage_text)
-						current_fighter += 1
-						action_cooldown = 0
-					#attack
-					else:
-						bandit1.attack(knight)
-						current_fighter += 1
-						action_cooldown = 0
+					# if (bandit1.hp / bandit1.max_hp) < 0.5 and bandit1.potions > 0:
+					# 	#check if the potion would heal the bandit beyond max health
+					# 	if bandit1.max_hp - bandit1.hp > potion_effect:
+					# 		heal_amount = potion_effect
+					# 	else:
+					# 		heal_amount = bandit1.max_hp - bandit1.hp
+					# 	bandit1.hp += heal_amount
+					# 	bandit1.potions -= 1
+					# 	damage_text = DamageText(bandit1.rect.centerx, bandit1.rect.y, str(heal_amount), green)
+					# 	damage_text_group.add(damage_text)
+					# 	current_fighter += 1
+					# 	action_cooldown = 0
+					# #attack
+					# else:
+					bandit1.attack(knight)
+					current_fighter += 1
+					action_cooldown = 0
 			else:
 				current_fighter += 1
 
@@ -429,7 +426,10 @@ while run:
 		if current_fighter > total_fighters:
 			current_fighter = 1
 
-
+	if knight.action == 1:
+		draw_good_answer()
+	elif bandit1.action == 1:
+		draw_wrong_answer()
 	#check if all bandits are dead
 	alive_bandits = 0
 	if bandit1.alive == True:
@@ -448,7 +448,7 @@ while run:
 			knight.reset()
 			bandit1.reset()
 			current_fighter = 1
-			action_cooldown
+			action_cooldown = 0
 			game_over = 0
 
 
