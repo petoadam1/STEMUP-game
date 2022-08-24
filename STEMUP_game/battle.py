@@ -32,7 +32,7 @@ action_wait_time = 75
 attack = False
 potion = False
 potion_effect = 15
-clicked = False
+battle_clicked = False
 game_over = 0
 
 
@@ -48,16 +48,11 @@ black = (0, 0, 0)
 #load images
 #background image
 background_img = pygame.image.load('img/Background/background.png').convert_alpha()
-#panel image
 panel_img = pygame.image.load('img/Icons/new_panel.png').convert_alpha()
 questionpanel_img = pygame.image.load('img/Icons/question_panel.png').convert_alpha()
-#button images
-potion_img = pygame.image.load('img/Icons/potion.png').convert_alpha()
 restart_img = pygame.image.load('img/Icons/restart.png').convert_alpha()
-#load victory and defeat images
 victory_img = pygame.image.load('img/Icons/victory.png').convert_alpha()
 defeat_img = pygame.image.load('img/Icons/defeat.png').convert_alpha()
-#sword image
 sword_img = pygame.image.load('img/Icons/sword.png').convert_alpha()
 
 
@@ -264,14 +259,14 @@ answer_text2 = font.render(answer2, True, white)
 answer1_button = button.Button(screen, screen_width * 0.25, screen_height - 100, answer_text1, 40, 30)
 answer2_button = button.Button(screen, screen_width * 0.7, screen_height - 100, answer_text2, 40, 30)
 
-imgvalue = pygame.image.load(f'img/Icons/question_panel.png')
-imgvalue = pygame.transform.scale(imgvalue, ((imgvalue.get_width()-10), imgvalue.get_height()))
-left_answer_button = imgvalue.get_rect()
-left_answer_button.center = (0, screen_height-177)
-
-imgvalue2 = pygame.transform.scale(imgvalue, ((imgvalue.get_width()-10), imgvalue.get_height()))
-right_answer_button = imgvalue2.get_rect()
-right_answer_button.center = (800, screen_height-177)
+# imgvalue = pygame.image.load(f'img/Icons/question_panel.png')
+# imgvalue = pygame.transform.scale(imgvalue, ((imgvalue.get_width()-10), imgvalue.get_height()))
+# left_answer_button = imgvalue.get_rect()
+# left_answer_button.center = (0, screen_height-177)
+#
+# imgvalue2 = pygame.transform.scale(imgvalue, ((imgvalue.get_width()-10), imgvalue.get_height()))
+# right_answer_button = imgvalue2.get_rect()
+# right_answer_button.center = (800, screen_height-177)
 
 run = True
 while run:
@@ -288,7 +283,7 @@ while run:
 
 
 	# draw question
-	draw_text(question1, font, white, 185, (screen_height-195))
+	draw_text(question1, font, black, 185, (screen_height-195))
 	answer1 = False
 	answer2 = False
 	result1 = True
@@ -327,11 +322,11 @@ while run:
 		pygame.mouse.set_visible(False)
 		#show sword in place of mouse cursor
 		screen.blit(sword_img, pos)
-		if clicked == True and result1 == True and bandit1.alive == True:
+		if battle_clicked == True and result1 == True and bandit1.alive == True:
 			attack = True
 			target = bandit1
 			#draw_good_answer()
-		if clicked == True and result1 == False and bandit1.alive == True:
+		if battle_clicked == True and result1 == False and bandit1.alive == True:
 			#draw_text(f'Rossz válasz', font, red, 100, 100)
 			wrong_answer_attack = True
 
@@ -339,11 +334,11 @@ while run:
 			posy < (screen_height-10) and posx > (screen_width/2+10) and posx < (screen_width - 80):
 		pygame.mouse.set_visible(False)
 		screen.blit(sword_img, pos)
-		if clicked == True and result2 == True and bandit1.alive == True:
+		if battle_clicked == True and result2 == True and bandit1.alive == True:
 			attack = True
 			target = bandit1
 			#draw_good_answer()
-		if clicked == True and result2 == False and bandit1.alive == True:
+		if battle_clicked == True and result2 == False and bandit1.alive == True:
 			# draw_text(f'Rossz válasz', font, red, 100, 100)
 			wrong_answer_attack = True
 
@@ -457,9 +452,9 @@ while run:
 		if event.type == pygame.QUIT:
 			run = False
 		if event.type == pygame.MOUSEBUTTONDOWN:
-			clicked = True
+			battle_clicked = True
 		else:
-			clicked = False
+			battle_clicked = False
 
 	pygame.display.update()
 
