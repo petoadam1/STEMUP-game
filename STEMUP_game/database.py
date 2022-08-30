@@ -27,12 +27,12 @@ mycursor = mydb.cursor()
 Q3 = "INSERT INTO Accounts (username, pswd) VALUES (%s, %s)"
 Q4 = "INSERT INTO Fighters (accountId, name, hp, power, defense) VALUES (%s, %s, %s, %s, %s)"
 
-for x, account in enumerate(accounts):
-    mycursor.execute(Q3, account)
-    last_id = mycursor.lastrowid
-    mycursor.execute(Q4, (last_id,) + accounts_fighters[x])
-mydb.commit()
-mycursor.execute("SELECT * FROM Fighters")
+# for x, account in enumerate(accounts):
+#     mycursor.execute(Q3, account)
+#     last_id = mycursor.lastrowid
+#     mycursor.execute(Q4, (last_id,) + accounts_fighters[x])
+# mydb.commit()
+mycursor.execute("SELECT * FROM Fighters WHERE accountid = %s", (1,))
 for x in mycursor:
     print(x)
 mycursor.execute("SELECT * FROM Accounts")

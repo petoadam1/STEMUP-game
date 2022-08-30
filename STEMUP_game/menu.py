@@ -3,69 +3,72 @@ import button
 import random
 import mysql.connector
 
-#Pygame basics
+# Pygame basics
 pygame.init()
 clock = pygame.time.Clock()
 fps = 60
 
-#Database connect
+# Database connect
 db = mysql.connector.connect(host="localhost", user="root", passwd="1234", database="challenge_me")
 mycursor = db.cursor()
 
-#CONSTANTS
+# CONSTANTS
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 RED = (245, 66, 66)
 MAXRED = (255, 0, 0)
 GREEN = (0, 255, 0)
 
-
-#Game window
+# Game window
 battle_bottom_panel = 160
 battle_question_panel = 50
 battle_screen_width = 800
 battle_screen_height = 400 + battle_bottom_panel
 screen_width = 800
 screen_height = 400
-screen = pygame.display.set_mode((battle_screen_width, battle_screen_height)) # erre egy jobb megoldást kell találjak majd
+screen = pygame.display.set_mode(
+    (battle_screen_width, battle_screen_height))  # erre egy jobb megoldást kell találjak majd
 screen = pygame.display.set_mode((screen_width, screen_height))
 pygame.display.set_caption('Menu')
 
-#Fonts
+# Fonts
 battle_font = pygame.font.Font('font/8-BIT WONDER.ttf', 16)
 font = pygame.font.Font('font/8-BIT WONDER.ttf', 26)
 smallerFont = pygame.font.Font('font/8-BIT WONDER.ttf', 22)
 tinyFont = pygame.font.Font('font/8-BIT WONDER.ttf', 10)
 normalTypeFont = pygame.font.SysFont('Times New Roman', 26)
+#statFont = pygame.font.SysFont('Times New Roman', 10)
+statFont = pygame.font.Font('font/8-BIT WONDER.ttf', 12)
 
-#Images
+# Images
 background_img = pygame.image.load('img/Background/background.png').convert_alpha()
 play_img = pygame.image.load('img/Icons/play-button.png').convert_alpha()
 settings_img = pygame.image.load('img/Icons/settings-button.png').convert_alpha()
 inventory_img = pygame.image.load('img/Icons/inventory-button.png').convert_alpha()
 sword_img = pygame.image.load('img/Icons/sword.png').convert_alpha()
-bp_img = pygame.image.load('img/Icons/inventory2.png').convert_alpha()
+bp_img = pygame.image.load('img/Icons/inventory4.png').convert_alpha()
 login_img = pygame.image.load('img/Icons/login_button_2.png').convert_alpha()
 theoretical_question_img = pygame.image.load('img/Icons/theoretical_question_icon.png').convert_alpha()
 boss_question_img = pygame.image.load('img/Icons/boss_question_icon.png').convert_alpha()
 practical_question_img = pygame.image.load('img/Icons/practical_question_icon.png').convert_alpha()
 extra_loot_question_img = pygame.image.load('img/Icons/extra_loot_question_icon.png').convert_alpha()
 completed_level_img = pygame.image.load('img/Icons/completed_level.png').convert_alpha()
-#Images to battle
+# Images to battle
 panel_img = pygame.image.load('img/Icons/new_panel.png').convert_alpha()
 questionpanel_img = pygame.image.load('img/Icons/question_panel.png').convert_alpha()
 restart_img = pygame.image.load('img/Icons/restart.png').convert_alpha()
 victory_img = pygame.image.load('img/Icons/victory.png').convert_alpha()
 defeat_img = pygame.image.load('img/Icons/defeat.png').convert_alpha()
 sword_img = pygame.image.load('img/Icons/sword.png').convert_alpha()
-#ITEM IMAGES
+# ITEM IMAGES
 
 
-#Booleans
+# Booleans
 inventory_click = False
 open_inventory = False
 is_inventory_open = False
 logged = False
+sign_up = False
 inmap = False
 start_game = False
 theoretical_game = False
@@ -73,9 +76,8 @@ boss_game = False
 practical_game = False
 extra_loot_game = False
 
-
 # bpresult = 0
-#Map floors, levels
+# Map floors, levels
 icons_size_x = 40
 icons_size_y = 40
 starter_pixel = 40
@@ -87,79 +89,90 @@ rand3 = random.randint(6, 8)
 rand4 = random.randint(9, 11)
 rand5 = random.randint(12, 14)
 
-the_map = [[[starter_pixel, (screen_height/3) - (screen_height/3/2) - (icons_size_x/2)], #row1
-            [starter_pixel, (screen_height/3*2) - (screen_height/3/2) - (icons_size_x/2)], #row2
-            [starter_pixel, screen_height - (screen_height / 3 / 2) - (icons_size_x / 2)]], #row3
-            #floor2
-           [[(starter_pixel + (screen_width/5)), (screen_height/3) - (screen_height/3/2) - (icons_size_x/2)], #row1
-            [(starter_pixel + (screen_width/5)), (screen_height/3*2) - (screen_height/3/2) - (icons_size_x/2)], #row2
-            [(starter_pixel + (screen_width/5)), screen_height - (screen_height / 3 / 2) - (icons_size_x / 2)]], #row3
-            #floor3
-           [[(starter_pixel + (screen_width/5*2)), (screen_height/3) - (screen_height/3/2) - (icons_size_x/2)],
-            [(starter_pixel + (screen_width/5*2)), (screen_height/3*2) - (screen_height/3/2) - (icons_size_x/2)],
-            [(starter_pixel + (screen_width/5*2)), screen_height - (screen_height / 3 / 2) - (icons_size_x / 2)]],
-            # floor4
-           [[(starter_pixel + (screen_width/5*3)), (screen_height / 3) - (screen_height / 3 / 2) - (icons_size_x / 2)],
-            [(starter_pixel + (screen_width/5*3)), (screen_height / 3 * 2) - (screen_height / 3 / 2) - (icons_size_x / 2)],
-            [(starter_pixel + (screen_width/5*3)), screen_height - (screen_height / 3 / 2) - (icons_size_x / 2)]],
-            # floor5
-           [[(starter_pixel + (screen_width/5*4)), (screen_height / 3) - (screen_height / 3 / 2) - (icons_size_x / 2)],
-            [(starter_pixel + (screen_width/5*4)), (screen_height / 3 * 2) - (screen_height / 3 / 2) - (icons_size_x / 2)],
-            [(starter_pixel + (screen_width/5*4)), screen_height - (screen_height / 3 / 2) - (icons_size_x / 2)]],
+the_map = [[[starter_pixel, (screen_height / 3) - (screen_height / 3 / 2) - (icons_size_x / 2)],  # row1
+            [starter_pixel, (screen_height / 3 * 2) - (screen_height / 3 / 2) - (icons_size_x / 2)],  # row2
+            [starter_pixel, screen_height - (screen_height / 3 / 2) - (icons_size_x / 2)]],  # row3
+           # floor2
+           [[(starter_pixel + (screen_width / 5)), (screen_height / 3) - (screen_height / 3 / 2) - (icons_size_x / 2)],
+            # row1
+            [(starter_pixel + (screen_width / 5)),
+             (screen_height / 3 * 2) - (screen_height / 3 / 2) - (icons_size_x / 2)],  # row2
+            [(starter_pixel + (screen_width / 5)), screen_height - (screen_height / 3 / 2) - (icons_size_x / 2)]],
+           # row3
+           # floor3
+           [[(starter_pixel + (screen_width / 5 * 2)),
+             (screen_height / 3) - (screen_height / 3 / 2) - (icons_size_x / 2)],
+            [(starter_pixel + (screen_width / 5 * 2)),
+             (screen_height / 3 * 2) - (screen_height / 3 / 2) - (icons_size_x / 2)],
+            [(starter_pixel + (screen_width / 5 * 2)), screen_height - (screen_height / 3 / 2) - (icons_size_x / 2)]],
+           # floor4
+           [[(starter_pixel + (screen_width / 5 * 3)),
+             (screen_height / 3) - (screen_height / 3 / 2) - (icons_size_x / 2)],
+            [(starter_pixel + (screen_width / 5 * 3)),
+             (screen_height / 3 * 2) - (screen_height / 3 / 2) - (icons_size_x / 2)],
+            [(starter_pixel + (screen_width / 5 * 3)), screen_height - (screen_height / 3 / 2) - (icons_size_x / 2)]],
+           # floor5
+           [[(starter_pixel + (screen_width / 5 * 4)),
+             (screen_height / 3) - (screen_height / 3 / 2) - (icons_size_x / 2)],
+            [(starter_pixel + (screen_width / 5 * 4)),
+             (screen_height / 3 * 2) - (screen_height / 3 / 2) - (icons_size_x / 2)],
+            [(starter_pixel + (screen_width / 5 * 4)), screen_height - (screen_height / 3 / 2) - (icons_size_x / 2)]],
            ]
 
-#Map csomópontok(the_map változó) feltöltése
-question_button = [None] * (floor_size*row_size)
+# Map csomópontok(the_map változó) feltöltése
+question_button = [None] * (floor_size * row_size)
 count = 0
 for i in range(floor_size):
     for j in range(row_size):
-        #print(i, j)
+        # print(i, j)
         random_icon = random.randint(0, 3)
         if random_icon == 0:
             question_button[count] = button.Button(screen, the_map[i][j][0], the_map[i][j][1],
-                                                               theoretical_question_img, 40, 40)
+                                                   theoretical_question_img, 40, 40)
         elif random_icon == 1:
             question_button[count] = button.Button(screen, the_map[i][j][0], the_map[i][j][1],
-                                                              boss_question_img, 40, 40)
+                                                   boss_question_img, 40, 40)
         elif random_icon == 2:
             question_button[count] = button.Button(screen, the_map[i][j][0], the_map[i][j][1],
-                                                               practical_question_img, 40, 40)
+                                                   practical_question_img, 40, 40)
         elif random_icon == 3:
             question_button[count] = button.Button(screen, the_map[i][j][0], the_map[i][j][1],
                                                    extra_loot_question_img, 40, 40)
         # question_button[count] = button.Button(screen, the_map[i][j][0], the_map[i][j][1], theoretical_question_img, 40, 40)
         count += 1
 
-#Buttons
+# Buttons
 inventory_button = button.Button(screen, 10, 10, inventory_img, 60, 60)
 play_button = button.Button(screen, screen_width / 2 - 100, screen_height * 0.33, play_img, 200, 50)
 
-#Functions
+
+# Functions
 def draw_bg():
     screen.blit(background_img, (0, 0))
 
+
 def draw_bg_icons():
-    #screen.blit(play_img, (screen_width / 2 - 100, screen_height * 0.33))
+    # screen.blit(play_img, (screen_width / 2 - 100, screen_height * 0.33))
     screen.blit(settings_img, (screen_width / 2 - 100, screen_height * 0.50))
 
 
-
-
-
-#Classes
+# Classes
 class Account():
     def __init__(self, name, hp, power, defense):
         self.name = name
         self.hp = hp
         self.power = power
         self.defense = defense
+
+
 class User():
     def __init__(self, id, username, pswd):
         self.id = id
         self.username = username
         self.pswd = pswd
 
-fighter = Account('Adam', 50, 15, 5)
+
+fighter = [None]
 user = [None]
 
 
@@ -167,12 +180,13 @@ def draw_text(text, font, text_col, x, y):
     img = font.render(text, True, text_col)
     screen.blit(img, (x, y))
 
-def draw_item(itemimg, itemx, itemy):
 
+def draw_item(itemimg, itemx, itemy):
     asd1 = 'img/Items/'
     asd2 = asd1 + itemimg
     item = pygame.image.load(asd2).convert_alpha()
     screen.blit(item, (itemx, itemy))
+
 
 bp_x = 20
 bp_y = 30
@@ -182,10 +196,25 @@ bp_inventory_slot_size_x = 48
 bp_inventory_slot_size_y = 48
 bp_inventory_start_x = 293
 bp_inventory_start_y = bp_y + 26
+bp_weapon_slot_x = bp_x + 18
+bp_weapon_slot_y = bp_y + 37
+bp_armor_slot_x = bp_x + 201
+bp_armor_slot_y = bp_y + 92
+bp_helmet_slot_x = bp_x + 201
+bp_helmet_slot_y = bp_y + 37
 
-#Inventory
+
+# Inventory
 def draw_bp():
     screen.blit(bp_img, (bp_x, bp_y))
+
+    img = tinyFont.render(f'{fighter.name}', True, WHITE)
+    imgrect = img.get_rect().center
+    screen.blit(img, (bp_x + 133 - imgrect[0], bp_y + 195))
+
+    draw_text(f'{fighter.power}', statFont, WHITE, bp_x + 44, bp_y + bp_height - 35)
+    draw_text(f'{fighter.defense}', statFont, WHITE, bp_x + 124, bp_y + bp_height - 35)
+    draw_text(f'{fighter.hp}', statFont, WHITE, bp_x + 206, bp_y + bp_height - 35)
     mycursor.execute(
         "select * from accounts inner join fighters on accounts.id = fighters.accountId inner join inventories on accountId = fighterId inner join Items on item = Items.id")
     bpresult = mycursor.fetchall()
@@ -197,24 +226,118 @@ def draw_bp():
     inventory_counter = 0
     for k in bpresult:
         # print(k)
+        # a selectből a user-nek az id-jáz jelöli
         if k[0] == user.id:
-            itemimg = k[15]
+            itemimg = k[16]
             # print(itemx)
             # print(itemy)
+            equipped = False
             inventory_counter += 1
-            draw_item(itemimg, itemx, itemy)
+            pygame.mouse.set_visible(True)
+            posx, posy = pygame.mouse.get_pos()
+            # k[10] a selectből az equipped sor ahol 1/0 lehet az érték
+            if k[10] == 1:
+                equipped = True
+                # k[17] azt jelöli, hogy milyen típus, fegyver, páncél, fejfedő, stb
+                if k[17] == "weapon":
+                    draw_item(itemimg, bp_weapon_slot_x, bp_weapon_slot_y)
+                    if posx > bp_weapon_slot_x and posx < (bp_weapon_slot_x+48) and posy > bp_weapon_slot_y and posy < (bp_weapon_slot_y+48):
+                        if clicked:
+                            # k[8] fighterId-t jelöl, a k[9] pedig az item-nek az id-t
+                            mycursor.execute("UPDATE Inventories SET equipped = 0 WHERE fighterId = %s AND item = %s", (k[8], k[9]))
+                            db.commit()
+                            #name, hp, power, defense
+                            fighter.hp -= k[15]
+                            fighter.power -= k[13]
+                            fighter.defense -= k[14]
+
+                # k[17] azt jelöli, hogy milyen típus, fegyver, páncél, fejfedő, stb
+                if k[17] == "armor":
+                    draw_item(itemimg, bp_armor_slot_x, bp_armor_slot_y)
+                    if posx > bp_armor_slot_x and posx < (
+                            bp_armor_slot_x + 48) and posy > bp_armor_slot_y and posy < (bp_armor_slot_y + 48):
+                        if clicked:
+                            #k[8] fighterId-t jelöl, a k[9] pedig az item-nek az id-t
+                            mycursor.execute("UPDATE Inventories SET equipped = 0 WHERE fighterId = %s AND item = %s", (k[8], k[9]))
+                            db.commit()
+                            fighter.hp -= k[15]
+                            fighter.power -= k[13]
+                            fighter.defense -= k[14]
+                if k[17] == "helmet":
+                    draw_item(itemimg, bp_helmet_slot_x, bp_helmet_slot_y)
+                    if posx > bp_helmet_slot_x and posx < (
+                            bp_helmet_slot_x + 48) and posy > bp_helmet_slot_y and posy < (bp_helmet_slot_y + 48):
+                        if clicked:
+                            #k[8] fighterId-t jelöl, a k[9] pedig az item-nek az id-t
+                            mycursor.execute("UPDATE Inventories SET equipped = 0 WHERE fighterId = %s AND item = %s", (k[8], k[9]))
+                            db.commit()
+                            fighter.hp -= k[15]
+                            fighter.power -= k[13]
+                            fighter.defense -= k[14]
+            else:
+                if posx > itemx and posx < (itemx + 48) and posy > itemy and posy < (itemy + 48):
+                    if clicked:
+                        # print(k[8])
+                        # k[8] fighterId-t jelöl, a k[9] pedig az item-nek az id-t
+                        mycursor.execute("SELECT * FROM Inventories INNER JOIN Items ON item = Items.id WHERE fighterId = %s", (k[8],))
+                        equippedresult = mycursor.fetchall()
+                        there_is_equipped = False
+                        for l in equippedresult:
+                            # print(l)
+                            # print(l[9])
+                            #l[2] az equippedet jelöli, az l[9] pedig azt, hogy weapon, armor, vagy micsoda
+                            if l[2] == 1 and l[9] == k[17]:
+                                there_is_equipped = True
+                                mycursor.execute(
+                                    #az l[0] azt jelöli, hogy melyik fighterid, az l[1] pedig, hogy melyik item id
+                                    "UPDATE Inventories SET equipped = 0 WHERE fighterId = %s AND item = %s",
+                                    (l[0], l[1]))
+                                db.commit()
+                                fighter.hp -= l[7]
+                                fighter.power -= l[5]
+                                fighter.defense -= l[6]
+                                print(l[7], l[5], l[6])
+                                mycursor.execute(
+                                    "UPDATE Inventories SET equipped = 1 WHERE fighterId = %s AND item = %s",
+                                    (k[8], k[9]))
+                                db.commit()
+                                fighter.hp += k[15]
+                                fighter.power += k[13]
+                                fighter.defense += k[14]
+
+                        if there_is_equipped == False:
+                            mycursor.execute("UPDATE Inventories SET equipped = 1 WHERE fighterId = %s AND item = %s",(k[8], k[9]))
+                        # print("equipped false rész lefut")
+                            fighter.hp += k[15]
+                            fighter.power += k[13]
+                            fighter.defense += k[14]
+                        # itemx -= bp_inventory_slot_size_x
+                        # inventory_counter -= 1
+                draw_item(itemimg, itemx, itemy)
+
             # itemx += bp_inventory_slot_size_x
-            if inventory_counter == 10:
+
+            if inventory_counter == 10 and equipped == False:
                 itemx = bp_inventory_start_x
                 itemy = bp_inventory_start_y + bp_inventory_slot_size_y
+            elif inventory_counter == 20 and equipped == False:
+                itemx = bp_inventory_start_x
+                itemy = bp_inventory_start_y + bp_inventory_slot_size_y*2
+            elif inventory_counter == 30 and equipped == False:
+                itemx = bp_inventory_start_x
+                itemy = bp_inventory_start_y + bp_inventory_slot_size_y*3
+            elif equipped == True:
+                nothing = True
+                inventory_counter -= 1
             else:
                 itemx += bp_inventory_slot_size_x
 
             # itemy += 40
         # counter1 += 1
 
-#LOGIN PART
-#Booleans
+
+# LOGIN PART
+# Booleans
 username_active = False
 pswd_active = False
 wrong_un_pswd_text = False
@@ -228,7 +351,7 @@ subtitle2 = 'Password'
 # too_many_character = 'Too many character'
 
 # x, y = 200 helyen fogkirajzolódni, a 140 széles, 32 magas téglalap
-#Rectangles, Colors
+# Rectangles, Colors
 input_rect_username = pygame.Rect(300, 170, 200, 30)
 input_rect_pswd = pygame.Rect(300, 220, 200, 30)
 color_active = pygame.Color(237, 176, 71)
@@ -236,16 +359,16 @@ color_passive = pygame.Color(150, 100, 32)
 username_color = color_passive
 pswd_color = color_passive
 
-#BATTLE
+# BATTLE
 
-#questions
+# questions
 # question1 = 'Magyarul igent jelent'
 
-#answers
+# answers
 # answer1 = 'Yes'
 # answer2 = 'No'
 
-#define game variables
+# define game variables
 current_fighter = 1
 total_fighters = 2
 action_cooldown = 0
@@ -255,7 +378,9 @@ battle_clicked = False
 game_over = 0
 question_counter = 0
 click_is_free = True
+click_is_free_for_login = True
 start_ticking = False
+start_ticking_for_login = False
 cooldown = 100
 ticks = pygame.time.get_ticks()
 floor_completed = 0
@@ -264,25 +389,33 @@ floor_completed = 0
 def do_click_free():
     click_is_free = True
 
-#function for drawing background
-def draw_bg():
-	screen.blit(background_img, (0, 0))
 
-#function for drawing panel
+# function for drawing background
+def draw_bg():
+    screen.blit(background_img, (0, 0))
+
+
+# function for drawing panel
 def draw_panel():
-	#draw panel rectangle
-	screen.blit(panel_img, (0, battle_screen_height - battle_bottom_panel))
-	screen.blit(questionpanel_img, (0, battle_screen_height - 210))
-	# #show knight stats
-	# draw_text(f'{knight.name} HP: {knight.hp}', battle_font, red, 100, screen_height - bottom_panel + 10)
-	# #show name and health
-	# draw_text(f'{bandit1.name} HP: {bandit1.hp}', battle_font, red, 550, (screen_height - bottom_panel + 10) + 60)
+    # draw panel rectangle
+    screen.blit(panel_img, (0, battle_screen_height - battle_bottom_panel))
+    screen.blit(questionpanel_img, (0, battle_screen_height - 210))
+
+
+# #show knight stats
+# draw_text(f'{knight.name} HP: {knight.hp}', battle_font, red, 100, screen_height - bottom_panel + 10)
+# #show name and health
+# draw_text(f'{bandit1.name} HP: {bandit1.hp}', battle_font, red, 550, (screen_height - bottom_panel + 10) + 60)
 
 def draw_good_answer():
-	draw_text(f'Good answer', battle_font, GREEN, (battle_screen_width/2-78), battle_screen_height-battle_bottom_panel-battle_question_panel-20)
+    draw_text(f'Good answer', battle_font, GREEN, (battle_screen_width / 2 - 78),
+              battle_screen_height - battle_bottom_panel - battle_question_panel - 20)
+
 
 def draw_wrong_answer():
-	draw_text(f'Wrong answer', battle_font, MAXRED, (battle_screen_width / 2 - 92), battle_screen_height-battle_bottom_panel-battle_question_panel-20)
+    draw_text(f'Wrong answer', battle_font, MAXRED, (battle_screen_width / 2 - 92),
+              battle_screen_height - battle_bottom_panel - battle_question_panel - 20)
+
 
 # fighter class
 class Fighter():
@@ -428,6 +561,7 @@ class DamageText(pygame.sprite.Sprite):
         if self.counter > 30:
             self.kill()
 
+
 damage_text_group = pygame.sprite.Group()
 
 knighthp = 20
@@ -438,10 +572,9 @@ bandit1 = Fighter(550, 270, 'Bandit', bandithp, 6, 1)
 knight_health_bar = HealthBar(26, battle_screen_height - 142, knight.hp, knight.max_hp)
 bandit1_health_bar = HealthBar(754, battle_screen_height - 142, bandit1.hp, bandit1.max_hp)
 
-#create buttons
+# create buttons
 # potion_button = button.Button(screen, 100, screen_height - bottom_panel + 70, potion_img, 64, 64)
 restart_button = button.Button(screen, 330, 120, restart_img, 120, 30)
-
 
 # # answer_img1 = Answer
 # answer_text1 = battle_font.render(answer1, True, WHITE)
@@ -454,16 +587,36 @@ while run:
 
     clock.tick(fps)
 
+    # Login interface
     if logged == False:
-        if start_game == False:
+        if start_game == False and inmap == False and sign_up == False:
             draw_bg()
             draw_text(title, font, WHITE, 342, screen_height / 4)
             draw_text(subtitle1, tinyFont, WHITE, 302, 158)
             draw_text(subtitle2, tinyFont, WHITE, 302, 208)
+            draw_text('Sign up', tinyFont, WHITE, 302, 270)
+            pygame.mouse.set_visible(True)
+            posx, posy = pygame.mouse.get_pos()
             pygame.draw.rect(screen, username_color,
                              input_rect_username)  # , 2) vel hozzá lehet adni, hogy csak egy x vastagságú kerete legyen
             pygame.draw.rect(screen, pswd_color, input_rect_pswd)
             login_button = button.Button(screen, 420, 270, login_img, 80, 20)
+
+            if start_ticking_for_login == True:
+                if pygame.time.get_ticks() - ticks > 70:
+                    click_is_free_for_login = True
+                    ticks = pygame.time.get_ticks()
+                    # print("ticks")
+                    start_ticking_for_login = False
+
+            if click_is_free_for_login:
+                if posx > 302 and posx < 340 and posy > 270 and posy < 290:
+                    if clicked:
+                        click_is_free_for_login = False
+                        start_ticking_for_login = True
+                        ticks = pygame.time.get_ticks()
+                        sign_up = True
+
 
             if login_button.draw():
 
@@ -474,14 +627,29 @@ while run:
                 for i in result:
                     # print(i[1])
                     if i[1] == username_text and i[2] == pswd_text:
-                    # if i == un_pswd_databaseformat:
+                        # if i == un_pswd_databaseformat:
                         # for k in resultid:
                         user = User(i[0], i[1], i[2])
-                        logged = True
-                        print(user.id)
-                        print(user.username)
-                        print(user.pswd)
+                        mycursor.execute("SELECT * FROM Accounts INNER JOIN Fighters ON Accounts.id = Fighters.accountId WHERE Accounts.id = %s", (i[0],))
+                        result2 = mycursor.fetchall()
+                        mycursor.execute(
+                            "select Items.power, Items.defense, Items.hp from accounts inner join fighters on accounts.id = fighters.accountId inner join inventories on accountId = fighterId inner join Items on item = Items.id WHERE Accounts.id = %s AND equipped = 1;",
+                            (i[0],))
+                        itemStats = mycursor.fetchall()
+                        hp = 0
+                        power = 0
+                        defense = 0
+                        for j in itemStats:
+                            print()
+                            hp += j[2]
+                            power += j[0]
+                            defense += j[1]
 
+                        fighter = Account(result2[0][4], result2[0][5]+hp, result2[0][6]+power, result2[0][7]+defense)
+                        logged = True
+                        # print(user.id)
+                        # print(user.username)
+                        # print(user.pswd)
                 if logged == False:
                     wrong_un_pswd_text = True
 
@@ -507,27 +675,71 @@ while run:
             # ez felelős azért, hogy akkora legyen a téglalap szélessége, mint a szöveg
             # input_rect_username.w = max(200, text_surface.get_width() + 10)
 
+    #Sign up interface
+    if sign_up == True:
+        if inmap == False and start_game == False and logged == False:
+            draw_bg()
+            draw_text('Sign up', font, WHITE, 325, screen_height / 4)
+            draw_text(subtitle1, tinyFont, WHITE, 302, 158)
+            draw_text(subtitle2, tinyFont, WHITE, 302, 208)
+            draw_text('Sign in', tinyFont, WHITE, 302, 270)
+            pygame.mouse.set_visible(True)
+            posx, posy = pygame.mouse.get_pos()
+            pygame.draw.rect(screen, username_color,
+                             input_rect_username)  # , 2) vel hozzá lehet adni, hogy csak egy x vastagságú kerete legyen
+            pygame.draw.rect(screen, pswd_color, input_rect_pswd)
+            login_button = button.Button(screen, 420, 270, login_img, 80, 20)
+
+            if start_ticking_for_login == True:
+                if pygame.time.get_ticks() - ticks > 70:
+                    click_is_free_for_login = True
+                    ticks = pygame.time.get_ticks()
+                    # print("ticks")
+                    start_ticking_for_login = False
+
+            if click_is_free_for_login == True:
+                if posx > 302 and posx < 340 and posy > 270 and posy < 290:
+                    if clicked:
+                        click_is_free_for_login = False
+                        start_ticking_for_login = True
+                        ticks = pygame.time.get_ticks()
+                        sign_up = False
+
+            if login_button.draw():
+                nothing = True
+
+    # Menu interface
     if inmap == False and start_game == False:
         if logged == True:
-            #print("menu")
+            # print("menu")
             screen = pygame.display.set_mode((screen_width, screen_height))
+            pygame.mouse.set_visible(True)
+            posx, posy = pygame.mouse.get_pos()
             draw_bg()
             # x = 20
             # y = 30
             # screen.fill(WHITE)
             draw_bg_icons()
+            draw_text('Sign out', tinyFont, WHITE, screen_width - 80, screen_height - 20)
+
+            if click_is_free:
+                if posx > screen_width - 83 and posx < screen_width - 5 and posy > screen_height - 23 and posy < screen_height - 5:
+                    if clicked:
+                        logged = False
+                        username_text = ''
+                        pswd_text = ''
+                        open_inventory = False
 
             if start_ticking == True:
                 if pygame.time.get_ticks() - ticks > 50:
                     click_is_free = True
                     ticks = pygame.time.get_ticks()
-                    #print("ticks")
+                    # print("ticks")
                     start_ticking = False
 
-            if play_button.draw():
-
-                #ide bekell rakni, majd a random számokat, hogy újragenerálja
-                #print("ez nem jo1")
+            if play_button.draw() and open_inventory == False:
+                # ide bekell rakni, majd a random számokat, hogy újragenerálja
+                # print("ez nem jo1")
                 inmap = True
 
             if inventory_button.draw():
@@ -540,78 +752,75 @@ while run:
                         # is_inventory_open = True
 
             if open_inventory == True:
-                #print("open")
+                # print("open")
                 draw_bp()
                 # draw_text(fighter.name, font, WHITE, 228, 135)
                 # draw_text(f'{fighter.hp}', smallerFont, BLACK, 170, 190)
                 # draw_text(f'{fighter.power}', smallerFont, BLACK, 170, 210)
                 # draw_text(f'{fighter.defense}', smallerFont, BLACK, 170, 230)
 
-            pygame.mouse.set_visible(True)
-            posx, posy = pygame.mouse.get_pos()
-
-
             if click_is_free:
                 if open_inventory == True:
                     if posx > 10 and posx < 72 and posy > 10 and posy < 72:
                         if clicked:
-                            #print("close")
-                            #is_inventory_open = False
+                            # print("close")
+                            # is_inventory_open = False
                             open_inventory = False
 
+    # Map interface
     if inmap == True and start_game == False:
         screen = pygame.display.set_mode((screen_width, screen_height))
         draw_bg()
 
-        for h in range(floor_size*row_size):
+        for h in range(floor_size * row_size):
 
             if h != rand and h != rand2 and h != rand3 and h != rand4 and h != rand5:
 
                 startX = question_button[h].x + 8
                 startY = question_button[h].y + 8
                 egesz = h // 3
-                #print(egesz)
+                # print(egesz)
                 maradek = h % 3
-                #print(maradek)
-                if h < ((floor_size*row_size)-3):
+                # print(maradek)
+                if h < ((floor_size * row_size) - 3):
                     if maradek == 2:
                         if h + 1 != rand and h + 1 != rand2 and h + 1 != rand3 and h + 1 != rand4 and h + 1 != rand5:
-                            endX = question_button[h+1].x+8
-                            endY = question_button[h+1].y+8
+                            endX = question_button[h + 1].x + 8
+                            endY = question_button[h + 1].y + 8
                             pygame.draw.line(screen, WHITE, (startX, startY), (endX, endY))
                         if h + 2 != rand and h + 2 != rand2 and h + 2 != rand3 and h + 2 != rand4 and h + 2 != rand5:
-                            endX = question_button[h+2].x+8
-                            endY = question_button[h+2].y+8
+                            endX = question_button[h + 2].x + 8
+                            endY = question_button[h + 2].y + 8
                             pygame.draw.line(screen, WHITE, (startX, startY), (endX, endY))
                         if h + 3 != rand and h + 3 != rand2 and h + 3 != rand3 and h + 3 != rand4 and h + 3 != rand5:
-                            endX = question_button[h+3].x+8
-                            endY = question_button[h+3].y+8
+                            endX = question_button[h + 3].x + 8
+                            endY = question_button[h + 3].y + 8
                             pygame.draw.line(screen, WHITE, (startX, startY), (endX, endY))
                     if maradek == 1:
                         if h + 2 != rand and h + 2 != rand2 and h + 2 != rand3 and h + 2 != rand4 and h + 2 != rand5:
-                            endX = question_button[h+2].x+8
-                            endY = question_button[h+2].y+8
+                            endX = question_button[h + 2].x + 8
+                            endY = question_button[h + 2].y + 8
                             pygame.draw.line(screen, WHITE, (startX, startY), (endX, endY))
                         if h + 3 != rand and h + 3 != rand2 and h + 3 != rand3 and h + 3 != rand4 and h + 3 != rand5:
-                            endX = question_button[h + 3].x+8
-                            endY = question_button[h + 3].y+8
+                            endX = question_button[h + 3].x + 8
+                            endY = question_button[h + 3].y + 8
                             pygame.draw.line(screen, WHITE, (startX, startY), (endX, endY))
                         if h + 4 != rand and h + 4 != rand2 and h + 4 != rand3 and h + 4 != rand4 and h + 4 != rand5:
-                            endX = question_button[h + 4].x+8
-                            endY = question_button[h + 4].y+8
+                            endX = question_button[h + 4].x + 8
+                            endY = question_button[h + 4].y + 8
                             pygame.draw.line(screen, WHITE, (startX, startY), (endX, endY))
                     if maradek == 0:
                         if h + 3 != rand and h + 3 != rand2 and h + 3 != rand3 and h + 3 != rand4 and h + 3 != rand5:
-                            endX = question_button[h+3].x+8
-                            endY = question_button[h+3].y+8
+                            endX = question_button[h + 3].x + 8
+                            endY = question_button[h + 3].y + 8
                             pygame.draw.line(screen, WHITE, (startX, startY), (endX, endY))
                         if h + 4 != rand and h + 4 != rand2 and h + 4 != rand3 and h + 4 != rand4 and h + 4 != rand5:
-                            endX = question_button[h + 4].x+8
-                            endY = question_button[h + 4].y+8
+                            endX = question_button[h + 4].x + 8
+                            endY = question_button[h + 4].y + 8
                             pygame.draw.line(screen, WHITE, (startX, startY), (endX, endY))
                         if h + 5 != rand and h + 5 != rand2 and h + 5 != rand3 and h + 5 != rand4 and h + 5 != rand5:
-                            endX = question_button[h + 5].x+8
-                            endY = question_button[h + 5].y+8
+                            endX = question_button[h + 5].x + 8
+                            endY = question_button[h + 5].y + 8
                             pygame.draw.line(screen, WHITE, (startX, startY), (endX, endY))
                 if floor_completed == 0:
                     if h < 3:
@@ -743,13 +952,13 @@ while run:
                     #     if question_button[h].draw():
                     #         nothing = True
 
-
+    # Fight interface
     if start_game == True:
 
         screen = pygame.display.set_mode((battle_screen_width, battle_screen_height))
         draw_bg()
         pygame.display.set_caption('Battle')
-        #clock.tick(fps)
+        # clock.tick(fps)
         # draw panel
         draw_panel()
         knight_health_bar.draw(knight.hp)
@@ -764,8 +973,9 @@ while run:
                     question_counter = question_counter + 1
                 start_ticking = False
 
-        #select databases datas
-        mycursor.execute("SELECT question_type, question, answer1, answer2, answer3, answer4, good_answer_number FROM Questions")
+        # select databases datas
+        mycursor.execute(
+            "SELECT question_type, question, answer1, answer2, answer3, answer4, good_answer_number FROM Questions")
         questions = mycursor.fetchall()
         # print(result[0][0])
         result1 = False
@@ -816,9 +1026,10 @@ while run:
         posx, posy = pygame.mouse.get_pos()
 
         if click_is_free:
-            #left top corner
+            # left top corner
             if posy > (battle_screen_height - battle_bottom_panel) and \
-                    posy < (battle_screen_height - (battle_bottom_panel/2) - 10) and posx > 80 and posx < (battle_screen_width / 2 - 10):
+                    posy < (battle_screen_height - (battle_bottom_panel / 2) - 10) and posx > 80 and posx < (
+                    battle_screen_width / 2 - 10):
                 # hide mouse
                 pygame.mouse.set_visible(False)
                 # show sword in place of mouse cursor
@@ -826,36 +1037,38 @@ while run:
                 if battle_clicked == True and result1 == True and bandit1.alive == True:
                     attack = True
                     target = bandit1
-                    #question_counter = question_counter + 1
+                    # question_counter = question_counter + 1
                     ticks = pygame.time.get_ticks()
                     start_ticking = True
                     click_is_free = False
                 if battle_clicked == True and result1 == False and bandit1.alive == True:
                     wrong_answer_attack = True
-                    #question_counter = question_counter + 1
+                    # question_counter = question_counter + 1
                     ticks = pygame.time.get_ticks()
                     start_ticking = True
                     click_is_free = False
-            #right top corner
+            # right top corner
             if posy > (battle_screen_height - battle_bottom_panel) and \
-                    posy < (battle_screen_height - (battle_bottom_panel/2) - 10) and posx > (battle_screen_width / 2 + 10) and posx < (battle_screen_width - 80):
+                    posy < (battle_screen_height - (battle_bottom_panel / 2) - 10) and posx > (
+                    battle_screen_width / 2 + 10) and posx < (battle_screen_width - 80):
                 pygame.mouse.set_visible(False)
                 screen.blit(sword_img, pos)
                 if battle_clicked == True and result2 == True and bandit1.alive == True:
                     attack = True
                     target = bandit1
-                    #question_counter = question_counter + 1
+                    # question_counter = question_counter + 1
                     ticks = pygame.time.get_ticks()
                     start_ticking = True
                     click_is_free = False
                 if battle_clicked == True and result2 == False and bandit1.alive == True:
                     wrong_answer_attack = True
-                    #question_counter = question_counter + 1
+                    # question_counter = question_counter + 1
                     ticks = pygame.time.get_ticks()
                     start_ticking = True
                     click_is_free = False
             # left bottom corner
-            if posy > (battle_screen_height - (battle_bottom_panel/2) + 10) and posy < (battle_screen_height - 10) and posx > 80 and posx < (battle_screen_width / 2 - 10):
+            if posy > (battle_screen_height - (battle_bottom_panel / 2) + 10) and posy < (
+                    battle_screen_height - 10) and posx > 80 and posx < (battle_screen_width / 2 - 10):
                 # hide mouse
                 pygame.mouse.set_visible(False)
                 # show sword in place of mouse cursor
@@ -863,19 +1076,19 @@ while run:
                 if battle_clicked == True and result3 == True and bandit1.alive == True:
                     attack = True
                     target = bandit1
-                    #question_counter = question_counter + 1
+                    # question_counter = question_counter + 1
                     ticks = pygame.time.get_ticks()
                     start_ticking = True
                     click_is_free = False
                 if battle_clicked == True and result3 == False and bandit1.alive == True:
                     wrong_answer_attack = True
-                    #question_counter = question_counter + 1
+                    # question_counter = question_counter + 1
                     ticks = pygame.time.get_ticks()
                     start_ticking = True
                     click_is_free = False
 
             # right bottom corner
-            if posy > (battle_screen_height - (battle_bottom_panel/2) + 10) and posy < (battle_screen_height - 10)\
+            if posy > (battle_screen_height - (battle_bottom_panel / 2) + 10) and posy < (battle_screen_height - 10) \
                     and posx > (battle_screen_width / 2 + 10) and posx < (battle_screen_width - 80):
                 # hide mouse
                 pygame.mouse.set_visible(False)
@@ -884,13 +1097,13 @@ while run:
                 if battle_clicked == True and result4 == True and bandit1.alive == True:
                     attack = True
                     target = bandit1
-                    #question_counter = question_counter + 1
+                    # question_counter = question_counter + 1
                     ticks = pygame.time.get_ticks()
                     start_ticking = True
                     click_is_free = False
                 if battle_clicked == True and result4 == False and bandit1.alive == True:
                     wrong_answer_attack = True
-                    #question_counter = question_counter + 1
+                    # question_counter = question_counter + 1
                     ticks = pygame.time.get_ticks()
                     start_ticking = True
                     click_is_free = False
@@ -984,6 +1197,7 @@ while run:
         if practical_game == True:
             nothing = True
 
+    # Event handlers
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
