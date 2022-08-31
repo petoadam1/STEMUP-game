@@ -20,3 +20,25 @@ insert into Questions(question_type, question, answer1, answer2, answer3, answer
 values (2, 'Hogyan lehet egy soros megjegyzést készíteni Python nyelven?', '# egy soros','/ egysoros','// egy soros','& egy soros', 1);
 insert into Questions(question_type, question, answer1, answer2, answer3, answer4, good_answer_number) 
 values (3, "Mit ír a képernyőre a következő program. print('alma', end = ''); print('körte')?", 'alma körte','almakörte','alma majd a körte új sorba íródik','almaörte', 2);
+
+
+insert into Questions(question_type, question, answer1, answer2, answer3, answer4, good_answer_number) values (3, 'Mivel jelöljük az összeadást python nyelven?', '+','-','/','*', 1);
+insert into Questions(question_type, question, answer1, answer2, answer3, answer4, good_answer_number) values (3, 'Ha: "value = 5", akkor "value += 2 = ?" értéke mennyi?', '2','3','7','11', 3);
+insert into Questions(question_type, question, answer1, answer2, answer3, answer4, good_answer_number) values (4, '"11 % 3 = ?" végeredménye mennyi?', '3','2','4','11', 2);
+insert into Questions(question_type, question, answer1, answer2, answer3, answer4, good_answer_number) values (3, 'Mivel jelöljük a kivonást python nyelven?', '+','-','/','*', 2);
+insert into Questions(question_type, question, answer1, answer2, answer3, answer4, good_answer_number) 
+values (4, 'Melyik a helyes kiíratás Python nyelven?', 'println("Hello")','print("Hello")','printf("Hello")','WriteLine("Hello World")', 2);
+insert into Questions(question_type, question, answer1, answer2, answer3, answer4, good_answer_number) 
+values (3, 'Ki kezdte fejleszteni a Python nyelvet?', 'Bill Gates','Guido van Rossum','Tim Berners-Lee','Steve Jobs', 2);
+insert into Questions(question_type, question, answer1, answer2, answer3, answer4, good_answer_number) 
+values (3, 'Mikor jelent meg?', '1995','1996','1991','2001', 3);
+insert into Questions(question_type, question, answer1, answer2, answer3, answer4, good_answer_number) 
+values (3, 'Melyik operációs rendszerre fejlesztették?', 'Windows','Linux','IOS','Platformfüggetlen', 4);
+insert into Questions(question_type, question, answer1, answer2, answer3, answer4, good_answer_number) 
+values (4, 'Milyen nemzetiségű programozó kezdte fejleszteni a Python nyelvet?', 'Magyar','USA','Magyar','Holland', 4);
+insert into Questions(question_type, question, answer1, answer2, answer3, answer4, good_answer_number) 
+values (4, 'Hogyan lehet több soros megjegyzést készíteni Python nyelven?', '# több soros #','{ több soros }',"''' több soros '''",'/* több soros */', 3);
+insert into Questions(question_type, question, answer1, answer2, answer3, answer4, good_answer_number) 
+values (4, 'Hogyan lehet egy soros megjegyzést készíteni Python nyelven?', '# egy soros','/ egysoros','// egy soros','& egy soros', 1);
+insert into Questions(question_type, question, answer1, answer2, answer3, answer4, good_answer_number) 
+values (4, "Mit ír a képernyőre a következő program. print('alma', end = ''); print('körte')?", 'alma körte','almakörte','alma majd a körte új sorba íródik','almaörte', 2);

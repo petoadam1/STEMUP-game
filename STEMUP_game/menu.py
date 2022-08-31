@@ -75,6 +75,7 @@ theoretical_game = False
 boss_game = False
 practical_game = False
 extra_loot_game = False
+itemsrand = 0
 
 # bpresult = 0
 # Map floors, levels
@@ -158,7 +159,8 @@ def draw_bg_icons():
 
 # Classes
 class Account():
-    def __init__(self, name, hp, power, defense):
+    def __init__(self, id, name, hp, power, defense):
+        self.id = id
         self.name = name
         self.hp = hp
         self.power = power
@@ -417,16 +419,49 @@ def draw_wrong_answer():
     draw_text(f'Wrong answer', battle_font, MAXRED, (battle_screen_width / 2 - 92),
               battle_screen_height - battle_bottom_panel - battle_question_panel - 20)
 
+def add_random_item(question_type):
+    print("add item")
+    mycursor.execute("select count(*) from items")
+    itemscount = mycursor.fetchall()
+    itemscount_in_normal_int = itemscount[0][0]
+    # print(itemscount[0][0])
+    # print(question_type)
+    if question_type == 1:
+        itemsrand = random.randint(1, itemscount_in_normal_int)
+        mycursor.execute("INSERT INTO Inventories (fighterId, item) VALUES (%s, %s)", (fighter.id, itemsrand,))
+        db.commit()
+    if question_type == 2:
+        itemsrand = random.randint(1, itemscount_in_normal_int)
+        mycursor.execute("INSERT INTO Inventories (fighterId, item) VALUES (%s, %s)", (fighter.id, itemsrand,))
+        db.commit()
+    if question_type == 3:
+        itemsrand = random.randint(1, itemscount_in_normal_int)
+        mycursor.execute("INSERT INTO Inventories (fighterId, item) VALUES (%s, %s)", (fighter.id, itemsrand,))
+        db.commit()
+            # itemsrand = random.randint(1, itemscount_in_normal_int)
+            # mycursor.execute("INSERT INTO Inventories (fighterId, item) VALUES (%s, %s)", (fighter.id, itemsrand,))
+            # db.commit()
+    if question_type == 4:
+        itemsrand = random.randint(1, itemscount_in_normal_int)
+        mycursor.execute("INSERT INTO Inventories (fighterId, item) VALUES (%s, %s)", (fighter.id, itemsrand,))
+        db.commit()
+
+        # mycursor.execute("SELECT img FROM Items WHERE id = %s", (itemsrand,))
+        # itemimg = mycursor.fetchall()
+        # draw_item(itemimg[0][0], 150, 150)
+
+
 
 # fighter class
 class Fighter():
-    def __init__(self, x, y, name, max_hp, strength, potions):
+    def __init__(self, x, y, name, max_hp, power, defense):
         self.name = name
         self.max_hp = max_hp
         self.hp = max_hp
-        self.strength = strength
-        self.start_potions = potions
-        self.potions = potions
+        self.strength = power
+        self.defense = defense
+        #self.start_potions = potions
+        #self.potions = potions
         self.alive = True
         self.animation_list = []
         self.frame_index = 0
@@ -519,7 +554,7 @@ class Fighter():
 
     def reset(self):
         self.alive = True
-        self.potions = self.start_potions
+        # self.potions = self.start_potions
         self.hp = self.max_hp
         self.frame_index = 0
         self.action = 0
@@ -567,8 +602,8 @@ damage_text_group = pygame.sprite.Group()
 
 knighthp = 20
 bandithp = 20
-knight = Fighter(250, 315, 'Knight', knighthp, 10, 3)
-bandit1 = Fighter(545, 315, 'Bandit', bandithp, 6, 1)
+knight = Fighter(250, 315, 'Knight', knighthp, 10, 0)
+bandit1 = Fighter(545, 315, 'Bandit', bandithp, 6, 0)
 
 knight_health_bar = HealthBar(26, battle_screen_height - 142, knight.hp, knight.max_hp)
 bandit1_health_bar = HealthBar(754, battle_screen_height - 142, bandit1.hp, bandit1.max_hp)
@@ -576,6 +611,10 @@ bandit1_health_bar = HealthBar(754, battle_screen_height - 142, bandit1.hp, band
 # create buttons
 # potion_button = button.Button(screen, 100, screen_height - bottom_panel + 70, potion_img, 64, 64)
 restart_button = button.Button(screen, 330, 120, restart_img, 120, 30)
+# start_game = True
+make_question = True
+question_type = 1
+able_to_give_item = False
 
 # # answer_img1 = Answer
 # answer_text1 = battle_font.render(answer1, True, WHITE)
@@ -647,7 +686,8 @@ while run:
                             power += j[0]
                             defense += j[1]
 
-                        fighter = Account(result2[0][4], result2[0][5]+hp, result2[0][6]+power, result2[0][7]+defense)
+                        fighter = Account(result2[0][0], result2[0][4], result2[0][5]+hp, result2[0][6]+power, result2[0][7]+defense)
+                        knight = Fighter(250, 315, 'Knight', result2[0][5]+hp, result2[0][6]+power, result2[0][7]+defense)
                         logged = True
                         # print(user.id)
                         # print(user.username)
@@ -742,7 +782,10 @@ while run:
             if play_button.draw() and open_inventory == False:
                 # ide bekell rakni, majd a random számokat, hogy újragenerálja
                 # print("ez nem jo1")
+                knight = Fighter(250, 315, 'Knight', fighter.hp, fighter.power, fighter.defense)
                 inmap = True
+                start_ticking = False
+                click_is_free = False
 
             if inventory_button.draw():
                 if click_is_free:
@@ -774,6 +817,8 @@ while run:
         screen = pygame.display.set_mode((screen_width, screen_height))
         draw_bg()
         draw_text('Back to menu', tinyFont, WHITE, screen_width - 125, screen_height - 20)
+
+        able_to_give_item = True
 
         pygame.mouse.set_visible(True)
         posx, posy = pygame.mouse.get_pos()
@@ -838,19 +883,24 @@ while run:
                 if floor_completed == 0:
                     if h < 3:
                         if question_button[h].draw():
+                            make_question = True
                             if question_button[h].pureimage == theoretical_question_img:
+                                question_type = 1
                                 theoretical_game = True
                                 start_game = True
                                 inmap = False
                             if question_button[h].pureimage == boss_question_img:
+                                question_type = 3
                                 boss_game = True
                                 start_game = True
                                 inmap = False
                             if question_button[h].pureimage == practical_question_img:
+                                question_type = 2
                                 practical_game = True
                                 start_game = True
                                 inmap = False
                             if question_button[h].pureimage == extra_loot_question_img:
+                                question_type = 4
                                 extra_loot_game = True
                                 start_game = True
                                 inmap = False
@@ -864,19 +914,24 @@ while run:
                         screen.blit(completed_level_img, (x, y))
                     if h >= 3 and h < 6:
                         if question_button[h].draw():
+                            make_question = True
                             if question_button[h].pureimage == theoretical_question_img:
+                                question_type = 1
                                 theoretical_game = True
                                 start_game = True
                                 inmap = False
                             if question_button[h].pureimage == boss_question_img:
+                                question_type = 3
                                 boss_game = True
                                 start_game = True
                                 inmap = False
                             if question_button[h].pureimage == practical_question_img:
+                                question_type = 2
                                 practical_game = True
                                 start_game = True
                                 inmap = False
                             if question_button[h].pureimage == extra_loot_question_img:
+                                question_type = 4
                                 extra_loot_game = True
                                 start_game = True
                                 inmap = False
@@ -890,19 +945,24 @@ while run:
                         screen.blit(completed_level_img, (x, y))
                     if h >= 6 and h < 9:
                         if question_button[h].draw():
+                            make_question = True
                             if question_button[h].pureimage == theoretical_question_img:
+                                question_type = 1
                                 theoretical_game = True
                                 start_game = True
                                 inmap = False
                             if question_button[h].pureimage == boss_question_img:
+                                question_type = 3
                                 boss_game = True
                                 start_game = True
                                 inmap = False
                             if question_button[h].pureimage == practical_question_img:
+                                question_type = 2
                                 practical_game = True
                                 start_game = True
                                 inmap = False
                             if question_button[h].pureimage == extra_loot_question_img:
+                                question_type = 4
                                 extra_loot_game = True
                                 start_game = True
                                 inmap = False
@@ -916,19 +976,24 @@ while run:
                         screen.blit(completed_level_img, (x, y))
                     if h >= 9 and h < 12:
                         if question_button[h].draw():
+                            make_question = True
                             if question_button[h].pureimage == theoretical_question_img:
+                                question_type = 1
                                 theoretical_game = True
                                 start_game = True
                                 inmap = False
                             if question_button[h].pureimage == boss_question_img:
+                                question_type = 3
                                 boss_game = True
                                 start_game = True
                                 inmap = False
                             if question_button[h].pureimage == practical_question_img:
+                                question_type = 2
                                 practical_game = True
                                 start_game = True
                                 inmap = False
                             if question_button[h].pureimage == extra_loot_question_img:
+                                question_type = 14
                                 extra_loot_game = True
                                 start_game = True
                                 inmap = False
@@ -942,19 +1007,24 @@ while run:
                         screen.blit(completed_level_img, (x, y))
                     if h >= 12 and h < 15:
                         if question_button[h].draw():
+                            make_question = True
                             if question_button[h].pureimage == theoretical_question_img:
+                                question_type = 1
                                 theoretical_game = True
                                 start_game = True
                                 inmap = False
                             if question_button[h].pureimage == boss_question_img:
+                                question_type = 3
                                 boss_game = True
                                 start_game = True
                                 inmap = False
                             if question_button[h].pureimage == practical_question_img:
+                                question_type = 2
                                 practical_game = True
                                 start_game = True
                                 inmap = False
                             if question_button[h].pureimage == extra_loot_question_img:
+                                question_type = 4
                                 extra_loot_game = True
                                 start_game = True
                                 inmap = False
@@ -978,6 +1048,7 @@ while run:
         draw_panel()
         knight_health_bar.draw(knight.hp)
         bandit1_health_bar.draw(bandit1.hp)
+        # question_type = [None]
 
         if start_ticking == True:
             if pygame.time.get_ticks() - ticks > 1000:
@@ -985,33 +1056,53 @@ while run:
                 ticks = pygame.time.get_ticks()
                 print("ticks")
                 if knight.hp > 0 and bandit1.hp > 0:
-                    question_counter = question_counter + 1
+                    make_question = True
                 start_ticking = False
 
         # select databases datas
-        mycursor.execute(
-            "SELECT question_type, question, answer1, answer2, answer3, answer4, good_answer_number FROM Questions")
-        questions = mycursor.fetchall()
+
         # print(result[0][0])
-        result1 = False
-        result2 = False
-        result3 = False
-        result4 = False
-        question_type = questions[question_counter][0]
-        question = questions[question_counter][1]
-        answer1 = questions[question_counter][2]
-        answer2 = questions[question_counter][3]
-        answer3 = questions[question_counter][4]
-        answer4 = questions[question_counter][5]
-        good_answer_number = questions[question_counter][6]
-        if good_answer_number == 1:
-            result1 = True
-        elif good_answer_number == 2:
-            result2 = True
-        elif good_answer_number == 3:
-            result3 = True
-        elif good_answer_number == 4:
-            result4 = True
+        if make_question == True:
+            mycursor.execute(
+                "SELECT question_type, question, answer1, answer2, answer3, answer4, good_answer_number FROM Questions WHERE question_type = %s", (question_type,))
+            questions = mycursor.fetchall()
+            # print(questions)
+            count = 0
+            # print(questions)
+            for i in questions:
+                # print(i)
+                count += 1
+            questionrand = random.randint(0, (count-1))
+            # print(count)
+            # print(questionrand)
+            # mycursor.execute(
+            #     "SELECT question_type, question, answer1, answer2, answer3, answer4, good_answer_number FROM Questions WHERE id = %s", (questionrand,))
+            # filteredquestions = mycursor.fetchall()
+            # print(filteredquestions)
+
+            result1 = False
+            result2 = False
+            result3 = False
+            result4 = False
+            question_type = questions[questionrand][0]
+            question = questions[questionrand][1]
+            answer1 = questions[questionrand][2]
+            answer2 = questions[questionrand][3]
+            answer3 = questions[questionrand][4]
+            answer4 = questions[questionrand][5]
+            good_answer_number = questions[questionrand][6]
+            if good_answer_number == 1:
+                result1 = True
+            elif good_answer_number == 2:
+                result2 = True
+            elif good_answer_number == 3:
+                result3 = True
+            elif good_answer_number == 4:
+                result4 = True
+
+            make_question = False
+
+        # print(count)
 
         # draw question, answers
         draw_text(question, normalTypeFont, BLACK, 10, (battle_screen_height - 200))
@@ -1056,6 +1147,7 @@ while run:
                     ticks = pygame.time.get_ticks()
                     start_ticking = True
                     click_is_free = False
+                    print("attack")
                 if battle_clicked == True and result1 == False and bandit1.alive == True:
                     wrong_answer_attack = True
                     # question_counter = question_counter + 1
@@ -1126,12 +1218,16 @@ while run:
         if game_over == 0:
             # player action
             if knight.alive == True:
+
                 if current_fighter == 1:
+
                     action_cooldown += 1
                     if action_cooldown >= action_wait_time:
+                        click_is_free = True
                         # look for player action
                         # attack
                         if attack == True and target != None:
+                            print("attack is true and fight")
                             knight.attack(target)
                             # current_fighter += 1
                             action_cooldown = 0
@@ -1171,8 +1267,14 @@ while run:
 
         # check if game is over
         if game_over != 0:
+            #if you won
             if game_over == 1:
                 screen.blit(victory_img, (250, 50))
+                if able_to_give_item == True:
+                    add_random_item(question_type)
+                    able_to_give_item = False
+                # if able_to_give_item == False:
+                #     add_random_item(question_type, 0)
                 if restart_button.draw():
                     start_game = False
                     inmap = True
@@ -1185,6 +1287,7 @@ while run:
                     action_cooldown = 0
                     game_over = 0
                     question_counter = 0
+            # if you defeated
             if game_over == -1:
                 screen.blit(defeat_img, (290, 50))
                 if restart_button.draw():
