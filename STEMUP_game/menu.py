@@ -307,6 +307,7 @@ def draw_bp():
 
                         if there_is_equipped == False:
                             mycursor.execute("UPDATE Inventories SET equipped = 1 WHERE fighterId = %s AND item = %s",(k[8], k[9]))
+                            db.commit()
                         # print("equipped false rész lefut")
                             fighter.hp += k[15]
                             fighter.power += k[13]
@@ -433,29 +434,29 @@ class Fighter():
         self.update_time = pygame.time.get_ticks()
         # load idle images
         temp_list = []
-        for i in range(8):
-            img = pygame.image.load(f'img/{self.name}/Idle/{i}.png')
+        for i in range(4):
+            img = pygame.image.load(f'img/{self.name}/warrior_idle/{i}.png')
             img = pygame.transform.scale(img, (img.get_width() * 3, img.get_height() * 3))
             temp_list.append(img)
         self.animation_list.append(temp_list)
         # load attack images
         temp_list = []
-        for i in range(8):
-            img = pygame.image.load(f'img/{self.name}/Attack/{i}.png')
+        for i in range(4):
+            img = pygame.image.load(f'img/{self.name}/warrior_attack/{i}.png')
             img = pygame.transform.scale(img, (img.get_width() * 3, img.get_height() * 3))
             temp_list.append(img)
         self.animation_list.append(temp_list)
         # load hurt images
         temp_list = []
-        for i in range(3):
-            img = pygame.image.load(f'img/{self.name}/Hurt/{i}.png')
+        for i in range(4):
+            img = pygame.image.load(f'img/{self.name}/warrior_hurt/{i}.png')
             img = pygame.transform.scale(img, (img.get_width() * 3, img.get_height() * 3))
             temp_list.append(img)
         self.animation_list.append(temp_list)
         # load death images
         temp_list = []
-        for i in range(10):
-            img = pygame.image.load(f'img/{self.name}/Death/{i}.png')
+        for i in range(3):
+            img = pygame.image.load(f'img/{self.name}/warrior_death/{i}.png')
             img = pygame.transform.scale(img, (img.get_width() * 3, img.get_height() * 3))
             temp_list.append(img)
         self.animation_list.append(temp_list)
@@ -464,7 +465,7 @@ class Fighter():
         self.rect.center = (x, y)
 
     def update(self):
-        animation_cooldown = 100
+        animation_cooldown = 200
         # handle animation
         # update image
         self.image = self.animation_list[self.action][self.frame_index]
@@ -566,8 +567,8 @@ damage_text_group = pygame.sprite.Group()
 
 knighthp = 20
 bandithp = 20
-knight = Fighter(200, 260, 'Knight', knighthp, 10, 3)
-bandit1 = Fighter(550, 270, 'Bandit', bandithp, 6, 1)
+knight = Fighter(250, 315, 'Knight', knighthp, 10, 3)
+bandit1 = Fighter(545, 315, 'Bandit', bandithp, 6, 1)
 
 knight_health_bar = HealthBar(26, battle_screen_height - 142, knight.hp, knight.max_hp)
 bandit1_health_bar = HealthBar(754, battle_screen_height - 142, bandit1.hp, bandit1.max_hp)
@@ -581,6 +582,7 @@ restart_button = button.Button(screen, 330, 120, restart_img, 120, 30)
 # answer_text2 = battle_font.render(answer2, True, WHITE)
 # answer1_button = button.Button(screen, battle_screen_width * 0.25, battle_screen_height - 100, answer_text1, 40, 30)
 # answer2_button = button.Button(screen, battle_screen_width * 0.7, battle_screen_height - 100, answer_text2, 40, 30)
+# inmap = True
 
 run = True
 while run:
@@ -771,6 +773,17 @@ while run:
     if inmap == True and start_game == False:
         screen = pygame.display.set_mode((screen_width, screen_height))
         draw_bg()
+        draw_text('Back to menu', tinyFont, WHITE, screen_width - 125, screen_height - 20)
+
+        pygame.mouse.set_visible(True)
+        posx, posy = pygame.mouse.get_pos()
+
+        if posx > screen_width - 130 and posx < screen_width - 5 and posy > screen_height - 23 and posy < screen_height - 5:
+            if clicked:
+                print("asd")
+                inmap = False
+                logged = True
+
 
         for h in range(floor_size * row_size):
 
@@ -951,6 +964,8 @@ while run:
                     # if h >= 6:
                     #     if question_button[h].draw():
                     #         nothing = True
+
+
 
     # Fight interface
     if start_game == True:
