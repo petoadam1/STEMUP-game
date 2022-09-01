@@ -3,6 +3,7 @@ import button
 import random
 import mysql.connector
 
+
 # Pygame basics
 pygame.init()
 clock = pygame.time.Clock()
@@ -90,12 +91,12 @@ rand3 = random.randint(6, 8)
 rand4 = random.randint(9, 11)
 rand5 = random.randint(12, 14)
 
+
 the_map = [[[starter_pixel, (screen_height / 3) - (screen_height / 3 / 2) - (icons_size_x / 2)],  # row1
             [starter_pixel, (screen_height / 3 * 2) - (screen_height / 3 / 2) - (icons_size_x / 2)],  # row2
             [starter_pixel, screen_height - (screen_height / 3 / 2) - (icons_size_x / 2)]],  # row3
            # floor2
-           [[(starter_pixel + (screen_width / 5)), (screen_height / 3) - (screen_height / 3 / 2) - (icons_size_x / 2)],
-            # row1
+           [[(starter_pixel + (screen_width / 5)), (screen_height / 3) - (screen_height / 3 / 2) - (icons_size_x / 2)],# row1
             [(starter_pixel + (screen_width / 5)),
              (screen_height / 3 * 2) - (screen_height / 3 / 2) - (icons_size_x / 2)],  # row2
             [(starter_pixel + (screen_width / 5)), screen_height - (screen_height / 3 / 2) - (icons_size_x / 2)]],
@@ -451,7 +452,6 @@ def add_random_item(question_type):
         # draw_item(itemimg[0][0], 150, 150)
 
 
-
 # fighter class
 class Fighter():
     def __init__(self, x, y, name, max_hp, power, defense):
@@ -562,7 +562,115 @@ class Fighter():
 
     def draw(self):
         screen.blit(self.image, self.rect)
+class Bandit():
+    def __init__(self, x, y, name, max_hp, power, defense):
+        self.name = name
+        self.max_hp = max_hp
+        self.hp = max_hp
+        self.strength = power
+        self.defense = defense
+        #self.start_potions = potions
+        #self.potions = potions
+        self.alive = True
+        self.animation_list = []
+        self.frame_index = 0
+        self.action = 0  # 0:idle, 1:attack, 2:hurt, 3:dead
+        self.update_time = pygame.time.get_ticks()
+        # load idle images
+        temp_list = []
+        for i in range(4):
+            img = pygame.image.load(f'img/{self.name}/warrior_idle/{i}.png')
+            img = pygame.transform.scale(img, (img.get_width() * 3, img.get_height() * 3))
+            temp_list.append(img)
+        self.animation_list.append(temp_list)
+        # load attack images
+        temp_list = []
+        for i in range(4):
+            img = pygame.image.load(f'img/{self.name}/warrior_attack/{i}.png')
+            img = pygame.transform.scale(img, (img.get_width() * 3, img.get_height() * 3))
+            temp_list.append(img)
+        self.animation_list.append(temp_list)
+        # load hurt images
+        temp_list = []
+        for i in range(4):
+            img = pygame.image.load(f'img/{self.name}/warrior_hurt/{i}.png')
+            img = pygame.transform.scale(img, (img.get_width() * 3, img.get_height() * 3))
+            temp_list.append(img)
+        self.animation_list.append(temp_list)
+        # load death images
+        temp_list = []
+        for i in range(3):
+            img = pygame.image.load(f'img/{self.name}/warrior_death/{i}.png')
+            img = pygame.transform.scale(img, (img.get_width() * 3, img.get_height() * 3))
+            temp_list.append(img)
+        self.animation_list.append(temp_list)
+        self.image = self.animation_list[self.action][self.frame_index]
+        self.rect = self.image.get_rect()
+        self.rect.center = (x, y)
 
+    def update(self):
+        animation_cooldown = 200
+        # handle animation
+        # update image
+        self.image = self.animation_list[self.action][self.frame_index]
+        # check if enough time has passed since the last update
+        if pygame.time.get_ticks() - self.update_time > animation_cooldown:
+            self.update_time = pygame.time.get_ticks()
+            self.frame_index += 1
+        # if the animation has run out then reset back to the start
+        if self.frame_index >= len(self.animation_list[self.action]):
+            if self.action == 3:
+                self.frame_index = len(self.animation_list[self.action]) - 1
+            else:
+                self.idle()
+
+    def idle(self):
+        # set variables to idle animation
+        self.action = 0
+        self.frame_index = 0
+        self.update_time = pygame.time.get_ticks()
+
+    def attack(self, target):
+        # deal damage to enemy
+        rand = random.randint(-5, 5)
+        damage = self.strength + rand
+        target.hp -= damage
+        # run enemy hurt animation
+        target.hurt()
+        # check if target has died
+        if target.hp < 1:
+            target.hp = 0
+            target.alive = False
+            target.death()
+        damage_text = DamageText(target.rect.centerx, target.rect.y, str(damage), MAXRED)
+        damage_text_group.add(damage_text)
+        # set variables to attack animation
+        self.action = 1
+        self.frame_index = 0
+        self.update_time = pygame.time.get_ticks()
+
+    def hurt(self):
+        # set variables to hurt animation
+        self.action = 2
+        self.frame_index = 0
+        self.update_time = pygame.time.get_ticks()
+
+    def death(self):
+        # set variables to death animation
+        self.action = 3
+        self.frame_index = 0
+        self.update_time = pygame.time.get_ticks()
+
+    def reset(self):
+        self.alive = True
+        # self.potions = self.start_potions
+        self.hp = self.max_hp
+        self.frame_index = 0
+        self.action = 0
+        self.update_time = pygame.time.get_ticks()
+
+    def draw(self):
+        screen.blit(self.image, self.rect)
 
 class HealthBar():
     def __init__(self, x, y, hp, max_hp):
@@ -603,7 +711,7 @@ damage_text_group = pygame.sprite.Group()
 knighthp = 20
 bandithp = 20
 knight = Fighter(250, 315, 'Knight', knighthp, 10, 0)
-bandit1 = Fighter(545, 315, 'Bandit', bandithp, 6, 0)
+bandit1 = Bandit(545, 315, 'Bandit', bandithp, 6, 0)
 
 knight_health_bar = HealthBar(26, battle_screen_height - 142, knight.hp, knight.max_hp)
 bandit1_health_bar = HealthBar(754, battle_screen_height - 142, bandit1.hp, bandit1.max_hp)
@@ -1028,6 +1136,7 @@ while run:
                                 extra_loot_game = True
                                 start_game = True
                                 inmap = False
+                click_is_free = False
                         # if h >= 12:
                         #     if question_button[h].draw():
                         #         nothing = True
