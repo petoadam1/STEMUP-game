@@ -1,5 +1,10 @@
 # Python-guiz-game-repo
 
+tanar.py, diak.py: Egy esetleges dolgozat számonkéréshez készült demo verzió. A tanáré a tanar.py és a diáké a diak.py.
+
+otthoni.py: Egy gyakorlásra készült demo verzió
+
+
 Megoldandó feladatok: 
 
 1. Ne kaphasson már meglévő itemet egy játékos
