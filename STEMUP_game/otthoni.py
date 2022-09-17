@@ -27,8 +27,8 @@ battle_screen_width = 800
 battle_screen_height = 400 + battle_bottom_panel
 screen_width = 800
 screen_height = 400
-screen = pygame.display.set_mode(
-    (battle_screen_width, battle_screen_height))  # erre egy jobb megoldást kell találjak majd
+# screen = pygame.display.set_mode(
+#     (battle_screen_width, battle_screen_height))  # erre egy jobb megoldást kell találjak majd
 screen = pygame.display.set_mode((screen_width, screen_height))
 pygame.display.set_caption('Menu')
 
@@ -91,7 +91,7 @@ rand3 = random.randint(6, 8)
 rand4 = random.randint(9, 11)
 rand5 = random.randint(12, 14)
 
-
+            #floor1
 the_map = [[[starter_pixel, (screen_height / 3) - (screen_height / 3 / 2) - (icons_size_x / 2)],  # row1
             [starter_pixel, (screen_height / 3 * 2) - (screen_height / 3 / 2) - (icons_size_x / 2)],  # row2
             [starter_pixel, screen_height - (screen_height / 3 / 2) - (icons_size_x / 2)]],  # row3
@@ -99,8 +99,7 @@ the_map = [[[starter_pixel, (screen_height / 3) - (screen_height / 3 / 2) - (ico
            [[(starter_pixel + (screen_width / 5)), (screen_height / 3) - (screen_height / 3 / 2) - (icons_size_x / 2)],# row1
             [(starter_pixel + (screen_width / 5)),
              (screen_height / 3 * 2) - (screen_height / 3 / 2) - (icons_size_x / 2)],  # row2
-            [(starter_pixel + (screen_width / 5)), screen_height - (screen_height / 3 / 2) - (icons_size_x / 2)]],
-           # row3
+            [(starter_pixel + (screen_width / 5)), screen_height - (screen_height / 3 / 2) - (icons_size_x / 2)]], # row3
            # floor3
            [[(starter_pixel + (screen_width / 5 * 2)),
              (screen_height / 3) - (screen_height / 3 / 2) - (icons_size_x / 2)],
@@ -122,6 +121,8 @@ the_map = [[[starter_pixel, (screen_height / 3) - (screen_height / 3 / 2) - (ico
            ]
 
 # Map csomópontok(the_map változó) feltöltése
+
+
 question_button = [None] * (floor_size * row_size)
 count = 0
 for i in range(floor_size):
@@ -147,16 +148,13 @@ for i in range(floor_size):
 inventory_button = button.Button(screen, 10, 10, inventory_img, 60, 60)
 play_button = button.Button(screen, screen_width / 2 - 100, screen_height * 0.33, play_img, 200, 50)
 
-
 # Functions
 def draw_bg():
     screen.blit(background_img, (0, 0))
 
-
 def draw_bg_icons():
     # screen.blit(play_img, (screen_width / 2 - 100, screen_height * 0.33))
     screen.blit(settings_img, (screen_width / 2 - 100, screen_height * 0.50))
-
 
 # Classes
 class Account():
@@ -166,7 +164,6 @@ class Account():
         self.hp = hp
         self.power = power
         self.defense = defense
-
 
 class User():
     def __init__(self, id, username, pswd):
@@ -740,6 +737,7 @@ while run:
     if logged == False:
         if start_game == False and inmap == False and sign_up == False:
             draw_bg()
+            pygame.display.set_caption('Login')
             draw_text(title, font, WHITE, 342, screen_height / 4)
             draw_text(subtitle1, tinyFont, WHITE, 302, 158)
             draw_text(subtitle2, tinyFont, WHITE, 302, 208)
@@ -829,6 +827,7 @@ while run:
     if sign_up == True:
         if inmap == False and start_game == False and logged == False:
             draw_bg()
+            pygame.display.set_caption('Sign Up')
             draw_text('Sign up', font, WHITE, 325, screen_height / 4)
             draw_text(subtitle1, tinyFont, WHITE, 302, 158)
             draw_text(subtitle2, tinyFont, WHITE, 302, 208)
@@ -862,6 +861,7 @@ while run:
     if inmap == False and start_game == False:
         if logged == True:
             # print("menu")
+            pygame.display.set_caption('Menu')
             screen = pygame.display.set_mode((screen_width, screen_height))
             pygame.mouse.set_visible(True)
             posx, posy = pygame.mouse.get_pos()
